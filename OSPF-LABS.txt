@@ -2,6 +2,7 @@
 @I4(RST)/R20
 
 conf t
+hostname R20-I4
 int e0/2
 ip add 10.2.203.4 255.255.255.0
 no shut
@@ -10,6 +11,7 @@ end
 @I2(RST)/R3
 
 conf t
+hostname R3-I2
 int e0/2
 ip add 10.2.203.3 255.255.255.0
 no shut
@@ -21,6 +23,7 @@ end
 @R1(RST)/R2
 
 conf t
+hostname R2-R1
 int e1/1
 ip add 10.0.23.2 255.255.255.0
 no shut
@@ -34,9 +37,12 @@ interface loopback0
 @R2(RST)/R10
 
 conf t
+hostname R10-R2
 int e1/2
 ip add 10.1.102.1 255.255.255.0
 no shut
+
+##remove or ignore this####
 interface Loopback0
 ip address 10.0.1.2 255.255.255.0
 !
@@ -62,6 +68,7 @@ ip prefix-list deny_R1_Lo0 seq 2 permit 0.0.0.0/0 le 32
 @I1(RST)/R1
 
 conf t
+hostname R1-I1
 int e1/1
 ip add 10.0.3.1 255.255.255.0
 no shut
@@ -71,6 +78,8 @@ no shut
 end
 
 ******************************************************
+
+OSPF LAB 1
 
 @R1I4(RST)/R30
 
@@ -82,4 +91,81 @@ interface ethernet0/0
  ip address 10.0.30.3 255.255.255.0
 interface ethernet0/1
  ip address 10.50.40.3 255.255.255.0
+
+
+r20:
+	int lo 0
+	ip add 10.20.20.20 255.255.255.0
+	end
+r3: 
+	int lo 0
+	ip add 10.3.3.3 255.255.255.0
+	end
+r1:
+	int lo 0
+	ip add 10.1.1.1 255.255.255.0
+	end
+r2:
+	int lo 0
+	ip add 10.2.2.2 255.255.255.0
+	end
+r10:
+	int lo 0
+	ip add 10.10.10.10 255.255.255.0
+	end
+
+
+#Configure multi area ospf
+@R20:
+
+conf t 
+no router ospf 1
+router ospf 1
+router-id 10.20.20.20
+network 10.20.20.20 0.0.0.0 area 20
+network 10.2.203.0 0.0.0.255 area 20
+
+@R3:
+no router ospf 1
+router ospf 1
+router-id 10.3.3.3
+network 10.3.3.3 0.0.0.0 area 0
+network 10.0.23.0 0.0.0.255 area 0
+network 10.2.203.0 0.0.0.255 area 20
+network 10.0.3.0 0.0.0.255 area 0
+
+@R1:
+no router ospf 1
+router ospf 1
+router-id 10.1.1.1
+int lo 0
+ip ospf 1 area 0
+int e1/1
+ip ospf 1 area 0
+int e1/3
+ip ospf 1 area 0
+
+@R2:
+
+no router ospf 1
+router ospf 1
+router-id 10.2.2.2
+int lo 0
+ip ospf 1 area 0
+int e1/0
+ip ospf 1 area 10
+int e1/1
+ip ospf 1 area 0
+int e1/2
+ip ospf 1 area 0
+
+@R10
+
+router ospf 1
+router-id 10.10.10.10
+network 10.10.10.10 0.0.0.0 area 10
+network 10.1.102.0 0.0.0.255 area 10
+
+
+
 
