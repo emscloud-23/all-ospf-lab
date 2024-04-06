@@ -22,7 +22,7 @@ end
 
 conf t
 int e1/1
-iint p add 10.0.23.2 255.255.255.0
+ip add 10.0.23.2 255.255.255.0
 no shut
 int e1/0
 ip add 10.1.102.2 255.255.255.0
