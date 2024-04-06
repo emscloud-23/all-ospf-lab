@@ -1,0 +1,85 @@
+
+@I4(RST)/R20
+
+conf t
+e0/2
+ip add 10.2.203.4 255.255.255.0
+no shut
+end
+
+@I2(RST)/R3
+
+conf t
+e0/2
+ip add 10.2.203.3 255.255.255.0
+no shut
+e1/3
+ip add 10.0.23.3 255.255.255.0
+no shut
+end 
+
+@R1(RST)/R2
+
+conf t
+e1/1
+ip add 10.0.23.2 255.255.255.0
+no shut
+e1/0
+ip add 10.1.102.2 255.255.255.0
+no shut
+
+interface loopback0
+ ip address 10.0.1.1 255.255.255.0
+
+@R2(RST)/R10
+
+conf t
+e1/2
+ip add 10.1.102.1 255.255.255.0
+no shut
+interface Loopback0
+ip address 10.0.1.2 255.255.255.0
+!
+interface Ethernet0/0
+ip address 10.0.2.2 255.255.255.0
+!
+interface Ethernet0/1
+ip address 10.1.102.2 255.255.255.0
+!
+interface Ethernet0/2
+ip address 10.0.23.2 255.255.255.0
+!
+router ospf 10
+router-id 10.0.1.2
+network 10.0.1.0 0.0.0.255 area 0
+network 10.0.2.0 0.0.0.255 area 0
+network 10.0.23.0 0.0.0.255 area 0
+network 10.1.102.0 0.0.0.255 area 10
+!
+ip prefix-list deny_R1_Lo0 seq 2 permit 0.0.0.0/0 le 32
+
+
+@I1(RST)/R1
+
+conf t
+e1/1
+ip add 10.0.3.1 255.255.255.0
+no shut
+e1/3
+ip add 10.0.2.1 255.255.255.0
+no shut
+end
+
+******************************************************
+
+@R1I4(RST)/R30
+
+! R30 Initial Configuration
+conf t
+interface loopback0
+ ip address 10.30.30.30 255.255.255.255
+interface ethernet0/0
+ ip address 10.0.30.3 255.255.255.0
+interface ethernet0/1
+ ip address 10.50.40.3 255.255.255.0
+
